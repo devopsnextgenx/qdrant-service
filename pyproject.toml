@@ -1,6 +1,6 @@
 [build-system]
-requires = ["uv >= 0.2.0", "uv.build >= 0.2.0"]
-build-backend = "uv.build.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "qdrant-service"
@@ -17,13 +17,11 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "aiofiles>=23.1.0",
     "httpx>=0.24.1",
+    "ollama>=0.6.1",
 ]
 
-[tool.uv.extra-build-dependencies]
-qdrant-service = ["uv.build"]
+[tool.uv]
+managed = true
 
-[tool.uvcfg]
-# Helpful reminders for common uv commands used by this project
-sync_cmd = "uv sync"
-build_cmd = "uv build"
-run_cmd = "uv run"
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
