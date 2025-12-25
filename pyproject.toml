@@ -1,0 +1,29 @@
+[build-system]
+requires = ["uv >= 0.2.0", "uv.build >= 0.2.0"]
+build-backend = "uv.build.api"
+
+[project]
+name = "qdrant-service"
+version = "0.1.0"
+description = "Qdrant indexing and search service (FastAPI)"
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "fastapi>=0.95.2",
+    "uvicorn[standard]>=0.22.0",
+    "pyyaml>=6.0",
+    "qdrant-client==1.16.2",
+    "python-dotenv>=1.0.0",
+    "aiofiles>=23.1.0",
+    "httpx>=0.24.1",
+]
+
+[tool.uv.extra-build-dependencies]
+qdrant-service = ["uv.build"]
+
+[tool.uvcfg]
+# Helpful reminders for common uv commands used by this project
+sync_cmd = "uv sync"
+build_cmd = "uv build"
+run_cmd = "uv run"

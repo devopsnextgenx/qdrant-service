@@ -1,0 +1,8 @@
+GET http://192.168.12.111:1234/index?type=all
+
+
+###### Request Body
+GET http://192.168.12.111:1234/search?type=captions&q=FEW MOMENTS BUT OUR INNER SOUL DOES NOT MAKE US STOP
+
+###### Request Body
+GET http://192.168.12.111:1234/search?type=stories&q=obediently made tea
