@@ -10,7 +10,7 @@ from typing import Optional
 from .config import CONFIG
 from .embeddings import embedder
 from .qdrant_service import qdrant
-from .ingest import iter_all_documents, iter_captions, iter_stories
+from .ingest import iter_captions, iter_stories
 from .chunking import TextChunker  # NEW IMPORT
 
 logger = logging.getLogger(__name__)
