@@ -444,6 +444,19 @@ wheels = [
 ]
 
 [[package]]
+name = "ollama"
+version = "0.6.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/9d/5a/652dac4b7affc2b37b95386f8ae78f22808af09d720689e3d7a86b6ed98e/ollama-0.6.1.tar.gz", hash = "sha256:478c67546836430034b415ed64fa890fd3d1ff91781a9d548b3325274e69d7c6", size = 51620, upload-time = "2025-11-13T23:02:17.416Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/47/4f/4a617ee93d8208d2bcf26b2d8b9402ceaed03e3853c754940e2290fed063/ollama-0.6.1-py3-none-any.whl", hash = "sha256:fc4c984b345735c5486faeee67d8a265214a31cbb828167782dc642ce0a2bf8c", size = 14354, upload-time = "2025-11-13T23:02:16.292Z" },
+]
+
+[[package]]
 name = "portalocker"
 version = "3.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -725,6 +738,7 @@ dependencies = [
     { name = "aiofiles" },
     { name = "fastapi" },
     { name = "httpx" },
+    { name = "ollama" },
     { name = "python-dotenv" },
     { name = "pyyaml" },
     { name = "qdrant-client" },
@@ -736,6 +750,7 @@ requires-dist = [
     { name = "aiofiles", specifier = ">=23.1.0" },
     { name = "fastapi", specifier = ">=0.95.2" },
     { name = "httpx", specifier = ">=0.24.1" },
+    { name = "ollama", specifier = ">=0.6.1" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "qdrant-client", specifier = "==1.16.2" },

@@ -12,14 +12,25 @@ from typing import Any, Dict
 CONFIG_PATH = Path(os.getenv("CONFIG_PATH", Path(__file__).resolve().parents[1] / "config" / "config.yml"))
 
 DEFAULTS: Dict[str, Any] = {
-    "environment": "development",
+    "environment": os.getenv("APP_ENV", "development"),
     "logging": {
-        "level": "INFO",
-        "file": "logs/qdrant-service.log",
+        "level": os.getenv("LOG_LEVEL", "INFO"),
+        "file": os.getenv("LOG_FILE", "logs/qdrant-service.log"),
         "rotate": {"enabled": True, "max_bytes": 10 * 1024 * 1024, "backup_count": 5},
     },
-    "qdrant": {"url": "http://localhost:6333", "timeout": 30, "collections": {"captions": "captions", "stories": "stories"}},
-    "embeddings": {"backend": "ollama", "ollama": {"model": "embeddinggemma:latest", "endpoint": "http://localhost:11434", "timeout": 60}},
+    "qdrant": {
+        "url": os.getenv("QDRANT_URL", "http://localhost:6333"),
+        "timeout": int(os.getenv("QDRANT_TIMEOUT", "30")),
+        "collections": {"captions": "captions", "stories": "stories"},
+    },
+    "embeddings": {
+        "backend": os.getenv("EMBEDDING_BACKEND", "ollama"),
+        "ollama": {
+            "model": os.getenv("OLLAMA_EMBED_MODEL", "embeddinggemma:latest"),
+            "endpoint": os.getenv("OLLAMA_EMBED_ENDPOINT", "http://localhost:11434"),
+            "timeout": int(os.getenv("OLLAMA_EMBED_TIMEOUT", "60")),
+        },
+    },
     "indexing": {"batch_size": 64, "max_tokens": 512, "chunk_overlap": 32, "min_length": 10},
     "search": {"top_k": 10, "score_threshold": 0.0, "max_query_tokens": 128},
 }

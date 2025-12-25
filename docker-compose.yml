@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   qdrant:
     image: qdrant/qdrant:latest
@@ -11,8 +9,28 @@ services:
     volumes:
       # This maps a local directory for persistent data storage
       - "./qdrant:/qdrant/storage"
-    # environment:
+      # environment:
       # Optional: Set an API key for basic security
       # - QDRANT__SERVICE__API_KEY=your_secret_api_key_here
       # Optional: Enable the web UI dashboard
       # - QDRANT__SERVICE__ENABLE_DASHBOARD=true
+
+  app:
+    build: .
+    image: amitkshirsagar13/qdrant-service-app:latest
+    container_name: qdrant_app
+    restart: unless-stopped
+    ports:
+      - "1234:1234"
+    volumes:
+      - "./data:/app/data"
+      - "./config:/app/config"
+      - "./logs:/app/logs"
+    environment:
+      - QDRANT_URL=http://qdrant:6333
+      - DATA_DIR=/app/data
+      - CONFIG_PATH=/app/config/config.yml
+      - EMBEDDING_BACKEND=ollama
+      - OLLAMA_EMBED_ENDPOINT=http://192.168.12.222:11434
+    depends_on:
+      - qdrant

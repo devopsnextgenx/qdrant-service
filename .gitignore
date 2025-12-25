@@ -5,3 +5,5 @@ __pycache__/
 logs/
 data/
 .mypy_cache/
+nohup.out
+qdrant/
