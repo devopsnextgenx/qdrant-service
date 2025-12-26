@@ -37,6 +37,8 @@ def iter_captions(data_dir: str = DATA_DIR) -> Iterable[Dict[str, Any]]:
     if not os.path.exists(captions_dir):
         return
     for file in _iter_yaml_files(captions_dir):
+        if file.endswith("tags-content.yml"):
+            continue
         doc = load_yaml(file)
         # try to extract meaningful fields
         corrected = (doc.get("text_processing") or {}).get("corrected_text")
@@ -66,6 +68,8 @@ def iter_stories(data_dir: str = DATA_DIR) -> Iterable[Dict[str, Any]]:
     # Each thread has ymls folder with page_*.yml
     for root, dirs, files in os.walk(stories_dir):
         for f in files:
+            if f.endswith("tags-content.yml"):
+                continue
             if not f.endswith(".yml") and not f.endswith(".yaml"):
                 continue
             path = os.path.join(root, f)
