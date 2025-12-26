@@ -100,6 +100,27 @@ class TextChunker:
             if end >= len(words):
                 break
         
+        # Merge last chunk if it's less than 50% of chunk_size
+        if len(chunks) > 1:
+            last_chunk = chunks[-1]
+            prev_chunk = chunks[-2]
+            
+            last_chunk_words = len(last_chunk['text'].split())
+            # Use same word-conversion logic as before for consistency
+            target_words = int(self.chunk_size / 1.33)
+            
+            if last_chunk_words < (target_words * 0.5):
+                # Merge into previous chunk
+                # Avoid duplicating overlap if it exists
+                new_start = prev_chunk['payload']['start_word']
+                new_end = last_chunk['payload']['end_word']
+                prev_chunk['text'] = ' '.join(words[new_start:new_end])
+                
+                prev_chunk['payload']['chunk_content'] = prev_chunk['text']
+                prev_chunk['payload']['end_word'] = new_end
+                # Remove the last chunk
+                chunks.pop()
+        
         # Update total_chunks in all chunks
         for chunk in chunks:
             chunk['payload']['total_chunks'] = len(chunks)
