@@ -12,6 +12,7 @@ from .embeddings import embedder
 from .qdrant_service import qdrant
 from .ingest import iter_captions, iter_stories
 from .chunking import TextChunker  # NEW IMPORT
+from .tracker import QdrantProcessTracker
 
 logger = logging.getLogger(__name__)
 app = FastAPI(title="Qdrant Index & Search")
@@ -70,12 +71,18 @@ async def index(type: Optional[str] = Query("all", description="captions|stories
     if type not in ("all", "captions", "stories"):
         raise HTTPException(status_code=400, detail="Invalid type")
 
+    # Initialize tracker
+    tracker = QdrantProcessTracker()
+    skip_captions = tracker.get_processed_files("captions")
+    skip_stories = tracker.get_processed_files("stories")
+    logger.info(f"Loaded tracker: {len(skip_captions)} captions, {len(skip_stories)} stories already processed")
+
     # Prepare iterators
     raw_docs = []
     if type in ("all", "captions"):
-        raw_docs.extend(list(iter_captions()))
+        raw_docs.extend(list(iter_captions(skip_files=skip_captions)))
     if type in ("all", "stories"):
-        raw_docs.extend(list(iter_stories()))
+        raw_docs.extend(list(iter_stories(skip_files=skip_stories)))
 
     if not raw_docs:
         return {"indexed": 0}
@@ -105,6 +112,16 @@ async def index(type: Optional[str] = Query("all", description="captions|stories
     
     logger.info(f"Created {len(all_chunks)} chunks from {len(raw_docs)} documents")
     
+    # Track which files are being processed in this run
+    newly_processed_files = {"captions": set(), "stories": set()}
+    for doc in raw_docs:
+        source = doc['payload'].get('source')
+        dtype = doc['payload'].get('type')
+        if dtype == "caption":
+            newly_processed_files["captions"].add(source)
+        else:
+            newly_processed_files["stories"].add(source)
+
     # Process chunks in batches
     total_indexed = 0
     for i in range(0, len(all_chunks), INDEX_BATCH):
@@ -140,6 +157,14 @@ async def index(type: Optional[str] = Query("all", description="captions|stories
 
         total_indexed += len(batch)
         logger.info("Indexed batch %s - total indexed: %s", i // INDEX_BATCH + 1, total_indexed)
+
+    # Save progress after all batches are done
+    for source in newly_processed_files["captions"]:
+        tracker.mark_as_processed(source, "captions")
+    for source in newly_processed_files["stories"]:
+        tracker.mark_as_processed(source, "stories")
+    tracker.save()
+    logger.info("Updated tracker with %d new files", len(newly_processed_files["captions"]) + len(newly_processed_files["stories"]))
 
     return {
         "indexed": total_indexed, 

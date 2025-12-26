@@ -8,6 +8,7 @@ from .embeddings import embedder
 from .qdrant_service import qdrant
 from .chunking import TextChunker
 from .config import CONFIG
+from .tracker import QdrantProcessTracker
 
 # Setup logging
 logging.basicConfig(
@@ -37,16 +38,22 @@ async def index_documents(doc_type: str = "all"):
     chunker = TextChunker(chunk_size=CHUNK_SIZE, overlap=CHUNK_OVERLAP)
     logger.info(f"Initialized chunker with size={CHUNK_SIZE}, overlap={CHUNK_OVERLAP}")
     
+    # Initialize tracker
+    tracker = QdrantProcessTracker()
+    skip_captions = tracker.get_processed_files("captions")
+    skip_stories = tracker.get_processed_files("stories")
+    logger.info(f"Loaded tracker: {len(skip_captions)} captions, {len(skip_stories)} stories already processed")
+
     # Gather raw documents
     raw_docs = []
     if doc_type in ("all", "captions"):
-        raw_docs.extend(list(iter_captions()))
+        raw_docs.extend(list(iter_captions(skip_files=skip_captions)))
     if doc_type in ("all", "stories"):
-        raw_docs.extend(list(iter_stories()))
+        raw_docs.extend(list(iter_stories(skip_files=skip_stories)))
 
     if not raw_docs:
-        logger.warning("No documents found to index")
-        print("No documents found to index")
+        logger.warning("No new documents found to index")
+        print("No new documents found to index")
         return
 
     logger.info("Processing %s raw documents", len(raw_docs))
@@ -71,6 +78,16 @@ async def index_documents(doc_type: str = "all"):
     
     logger.info(f"Created {len(all_chunks)} chunks from {len(raw_docs)} documents")
     
+    # Track which files are being processed in this run
+    newly_processed_files = {"captions": set(), "stories": set()}
+    for doc in raw_docs:
+        source = doc['payload'].get('source')
+        dtype = doc['payload'].get('type')
+        if dtype == "caption":
+            newly_processed_files["captions"].add(source)
+        else:
+            newly_processed_files["stories"].add(source)
+
     # Process chunks in batches
     total_indexed = 0
     for i in range(0, len(all_chunks), INDEX_BATCH):
@@ -106,6 +123,14 @@ async def index_documents(doc_type: str = "all"):
 
         total_indexed += len(batch)
         logger.info("Indexed batch %s - total indexed: %s", batch_num, total_indexed)
+
+    # Save progress after all batches are done
+    for source in newly_processed_files["captions"]:
+        tracker.mark_as_processed(source, "captions")
+    for source in newly_processed_files["stories"]:
+        tracker.mark_as_processed(source, "stories")
+    tracker.save()
+    logger.info("Updated tracker with %d new files", len(newly_processed_files["captions"]) + len(newly_processed_files["stories"]))
 
     print(f"\n{'='*60}")
     print(f"Indexing complete!")
