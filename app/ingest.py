@@ -50,12 +50,16 @@ def iter_captions(data_dir: str = DATA_DIR) -> Iterable[Dict[str, Any]]:
         if not texts:
             texts = extract_text_fields_from_dict(doc)
 
+        # read file and find image file name from it
+        doc = load_yaml(file)
+        image_file = doc.get("image_file")
         for t in texts:
             yield {
                 "id": str(uuid.uuid4()),
                 "text": t,
                 "payload": {
                     "source": file,
+                    "image": image_file,
                     "type": "caption",
                 },
             }
@@ -87,7 +91,7 @@ def iter_stories(data_dir: str = DATA_DIR) -> Iterable[Dict[str, Any]]:
                         # all_texts = extract_text_fields_from_dict(post)
                         # t = "\n".join(all_texts)
                     if t.strip():
-                        yield {"id": str(uuid.uuid4()), "text": t, "payload": {"source": path, "type": "story", "page": f, "post_index": i}}
+                        yield {"id": str(uuid.uuid4()), "text": t, "payload": {"source": path, "type": "story", "page": f, "post_id": post.get("post_id")}}
             else:
                 # fallback: treat page as single document containing all string fields
                 texts = extract_text_fields_from_dict(doc)

@@ -92,7 +92,9 @@ async def index(type: Optional[str] = Query("all", description="captions|stories
         metadata = {
             'type': doc['payload'].get('type'),
             'source': doc['payload'].get('source'),
-            # Add any other metadata fields you need
+            'image': doc['payload'].get('image'),
+            'page': doc['payload'].get('page'),
+            'post_id': doc['payload'].get('post_id'),
         }
         
         # Chunk the document
