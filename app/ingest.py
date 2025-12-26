@@ -48,7 +48,7 @@ def iter_captions(data_dir: str = DATA_DIR, skip_files: Set[str] = None) -> Iter
         full_text = (doc.get("ocr") or {}).get("full_text") or doc.get("full_text")
 
         # fallbacks
-        texts = list(filter(None, [corrected, translated, full_text]))
+        texts = [translated or corrected or full_text]
         if not texts:
             texts = extract_text_fields_from_dict(doc)
 
