@@ -90,10 +90,7 @@ def iter_stories(data_dir: str = DATA_DIR, skip_files: Set[str] = None) -> Itera
                     if isinstance(post, str):
                         t = post
                     else:
-                        # collect text-like fields
                         t = post.get("content")
-                        # all_texts = extract_text_fields_from_dict(post)
-                        # t = "\n".join(all_texts)
                     if t.strip():
                         yield {"id": str(uuid.uuid4()), "text": t, "payload": {"source": path, "type": "story", "page": f, "post_id": post.get("post_id")}}
             else:
