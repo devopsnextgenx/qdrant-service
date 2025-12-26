@@ -195,7 +195,17 @@ async def search(
         text_query=q,
         limit=limit
     )
-    
+
+    if type == "captions":
+        # filter and only prepare unique result for each image url
+        unique_results = []
+        processed_image_urls = set()
+        for r in results:
+            if r["payload"]["image"] not in processed_image_urls:
+                processed_image_urls.add(r["payload"]["image"])
+                unique_results.append(r)
+        results = unique_results
+
     # Apply score threshold filter
     filtered = [r for r in results if r.get("score", 0) >= SEARCH_SCORE_THRESHOLD]
 
