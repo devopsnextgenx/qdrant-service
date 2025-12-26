@@ -9,7 +9,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict
 
-CONFIG_PATH = Path(os.getenv("CONFIG_PATH", Path(__file__).resolve().parents[1] / "config" / "config.yml"))
+CONFIG_PATH = Path(os.getenv("CONFIG_PATH", Path(__file__).resolve().parents[1] / "config" / "qdrant-config.yml"))
 
 DEFAULTS: Dict[str, Any] = {
     "environment": os.getenv("APP_ENV", "development"),

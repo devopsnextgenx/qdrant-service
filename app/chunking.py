@@ -14,7 +14,7 @@ class TextChunker:
     Splits text into overlapping chunks to maintain context at boundaries.
     """
     
-    def __init__(self, chunk_size: int = 512, overlap: int = 128):
+    def __init__(self, chunk_size: int = 128, overlap: int = 16):
         """
         Args:
             chunk_size: Target size in tokens (approximate using words)

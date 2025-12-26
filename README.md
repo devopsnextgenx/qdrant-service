@@ -42,7 +42,7 @@ Quickstart
    curl "http://localhost:8000/search?q=missing%20girl&type=captions&limit=5"
 
 Configuration
-- The project reads settings from `config/config.yml` by default. You can set `CONFIG_PATH` environment variable to point to a different YAML file.
+- The project reads settings from `config/qdrant-config.yml` by default. You can set `CONFIG_PATH` environment variable to point to a different YAML file.
 - Key configuration options:
   - `embeddings.backend`: `ollama` (default) or `sentence_transformers`
   - `qdrant.url`: address of the Qdrant service
@@ -51,16 +51,16 @@ Configuration
   - `logging.file`: location of log file (default: `logs/qdrant-service.log`)
 
 Notes
-- Configure QDRANT_URL via environment variable (default http://localhost:6333) or via `config/config.yml` (preferred)
+- Configure QDRANT_URL via environment variable (default http://localhost:6333) or via `config/qdrant-config.yml` (preferred)
 - The code is intentionally defensive about YAML structure — it will try to extract text fields automatically
 
 Embeddings
-- Default: sentence-transformers (`all-MiniLM-L6-v2`) or `ollama` if configured in `config/config.yml`
+- Default: sentence-transformers (`all-MiniLM-L6-v2`) or `ollama` if configured in `config/qdrant-config.yml`
 - To use Ollama (local embedding server) via config:
   - Set `embeddings.backend: ollama`
   - Set `embeddings.ollama.model` and/or `embeddings.ollama.endpoint` as needed (default endpoint: `http://localhost:11434/embed`). Use a model name present on your Ollama instance — check available models with `ollama ls` (examples: `all-minilm:latest`, `nomic-embed-text:latest`, `embeddinggemma:latest`).
     ```bash
-    CONFIG_PATH=config/config.yml \
+    CONFIG_PATH=config/qdrant-config.yml \
       uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
     ```
 

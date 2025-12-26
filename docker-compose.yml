@@ -29,7 +29,7 @@ services:
     environment:
       - QDRANT_URL=http://qdrant:6333
       - DATA_DIR=/app/data
-      - CONFIG_PATH=/app/config/config.yml
+      - CONFIG_PATH=/app/config/qdrant-config.yml
       - EMBEDDING_BACKEND=ollama
       - OLLAMA_EMBED_ENDPOINT=http://192.168.12.222:11434
     depends_on:
