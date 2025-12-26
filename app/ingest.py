@@ -73,6 +73,8 @@ def iter_stories(data_dir: str = DATA_DIR) -> Iterable[Dict[str, Any]]:
             # if there's an explicit posts list
             if isinstance(doc, dict) and "posts" in doc and isinstance(doc["posts"], list):
                 for i, post in enumerate(doc["posts"]):
+                    if post.get("is_comment"):
+                        continue
                     if isinstance(post, str):
                         t = post
                     else:
